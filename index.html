@@ -13,7 +13,7 @@
             --envelope-cover: #e6cfa7;
             --shadow-color: rgba(0, 0, 0, 0.2);
             --txt-color: #444;
-            --heart-color: rgb(252, 8, 231);
+            --heart-color: rgb(139, 3, 128);
             --gradient-start: #1a4f56;
             --gradient-end: #0a2226;
         }
@@ -87,7 +87,7 @@
             padding: 20px;
             background: linear-gradient(45deg, #fff 85%, #f0f0f0 100%);
         }
-
+        
         .text {
             font-family: 'Gill Sans', sans-serif;
             color: var(--txt-color);
@@ -96,7 +96,8 @@
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.5s ease-in-out;
-            line-height: 1.6;
+            line-height: 1.8;
+            letter-spacing: 0.3px;
         }
 
         .flap .text {
@@ -105,18 +106,83 @@
             font-size: 16px;
         }
 
+        .text h1 {
+            color: var(--heart-color);
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 1.5em;
+            font-family: 'Gill Sans', serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .text p {
+            margin-bottom: 1.5em;
+            text-align: justify;
+        }
+
+        .text .saludo {
+            font-size: 1.2em;
+            color: var(--heart-color);
+            margin-bottom: 1.5em;
+        }
+
+        .text .destacado {
+            font-style: italic;
+            color: var(--heart-color);
+        }
+
+        .text .firma {
+            text-align: right;
+            margin-top: 2em;
+            font-style: italic;
+        }
+
+        .text .firma .amor {
+            display: block;
+            margin-bottom: 0.5em;
+            color: #666;
+        }
+
+        .text .firma .nombre {
+            font-size: 1.3em;
+            color: var(--heart-color);
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        .text br {
+            margin-bottom: 0.8em;
+            content: "";
+            display: block;
+        }
+
+        .text strong {
+            color: var(--heart-color);
+        }
+
+        .flap > .envelope > .letter {
+            padding: 50px;
+        }
+
+        /* Estilo para emojis */
+        .emoji {
+            font-size: 1.2em;
+            vertical-align: middle;
+            margin: 0 3px;
+        }
+        
         .flap > .envelope::before {
             transform: rotateX(180deg);
             z-index: 0;
         }
-
+        
         .flap > .envelope > .letter {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 600px;
-            height: 800px;
+            height: 80vh; /* Cambiado para mejor respuesta móvil */
             max-width: 90vw;
             max-height: 90vh;
             z-index: 1000;
@@ -124,8 +190,33 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             padding: 40px;
             background: #fff;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--heart-color) #f0f0f0;
         }
 
+        /* Estilizar el scrollbar para navegadores webkit (Chrome, Safari, etc) */
+        .flap > .envelope > .letter::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .flap > .envelope > .letter::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        .flap > .envelope > .letter::-webkit-scrollbar-thumb {
+            background-color: var(--heart-color);
+            border-radius: 4px;
+            border: 2px solid #f0f0f0;
+        }
+
+        /* Asegurar que el contenido del texto tenga espacio adecuado */
+        .flap > .envelope > .letter .text {
+            padding-right: 20px; /* Espacio para el scrollbar */
+            padding-bottom: 20px; /* Espacio al final del contenido */
+        }
+        
         .heart {
             position: absolute;
             top: 50%;
@@ -323,25 +414,40 @@
             <div class="envelope">
                 <div class="letter">
                     <div class="text">
-                        <h1>Para mi amorcito 🌹</h1>
-                        <p>
-                            Mi amor 🌻, <br>
-
-Este 14 de febrero celebramos nuestro primer año juntos, y quiero aprovechar esta carta para recordarte cuánto significas para mí.<br>
-
-Nos conocimos un 7 de noviembre de 2023 en el trabajo. Al principio, no imaginaba que alguien tan especial como tú llegaría a ser una persona tan importante en mi vida. Pero con el tiempo, fui descubriendo lo increíble que eres. Me fui enamorando de tu hermosa personalidad, de tu manera única de ver el mundo y de ese brillo en tus ojos cuando hablas de lo que amas.<br>
-
-A lo largo de este año hemos compartido tantos momentos inolvidables: nuestras conversaciones que parecen no tener fin, nuestras risas espontáneas, los abrazos que se sienten con tanta calidez y todas esas pequeñas cosas que hacen que cada día a tu lado sea único.<br>
-
-Eres mi compañera, mi apoyo y mi felicidad. No hay un solo día en el que no agradezca haberte encontrado. Me has enseñado lo que es el amor verdadero, ese que se construye con paciencia, con detalles, con comprensión y con cariño incondicional.<br>
-
-Este es solo el comienzo de nuestra historia. Quiero seguir viviendo momentos inolvidables a tu lado, seguir creciendo juntos y demostrando cada día cuánto te amo. No sé qué nos depara el futuro, pero hay algo de lo que estoy seguro: <strong>quiero que seas tú, siempre tú.</strong><br>
-
-Feliz primer año, mi amor. Gracias por hacer de mi vida un lugar más hermoso. 💖<br>
-
-Con todo mi amor,<br>
-<strong>Cristian</strong>
+                        <h1>Para mi amorcito <span class="emoji">🌹</span></h1>
+                        
+                        <p class="saludo">
+                            Mi amor <span class="emoji">🌻</span>,
                         </p>
+                
+                        <p>
+                            Este 14 de febrero celebramos nuestro primer año juntos, y quiero aprovechar esta carta para recordarte cuánto significas para mí.
+                        </p>
+                
+                        <p>
+                            Nos conocimos un 7 de noviembre de 2023 en el trabajo. Al principio, no imaginaba que alguien tan especial como tú llegaría a ser una persona tan importante en mi vida. Pero con el tiempo, fui descubriendo lo increíble que eres. Me fui enamorando de tu hermosa personalidad, de tu manera única de ver el mundo y de ese brillo en tus ojos cuando hablas de lo que amas.
+                        </p>
+                
+                        <p>
+                            A lo largo de este año hemos compartido tantos momentos inolvidables: nuestras conversaciones que parecen no tener fin, nuestras risas espontáneas, los abrazos que se sienten con tanta calidez y todas esas pequeñas cosas que hacen que cada día a tu lado sea único.
+                        </p>
+                
+                        <p>
+                            Eres mi compañera, mi apoyo y mi felicidad. No hay un solo día en el que no agradezca haberte encontrado. Me has enseñado lo que es el amor verdadero, ese que se construye con paciencia, con detalles, con comprensión y con cariño incondicional.
+                        </p>
+                
+                        <p>
+                            Este es solo el comienzo de nuestra historia. Quiero seguir viviendo momentos inolvidables a tu lado, seguir creciendo juntos y demostrando cada día cuánto te amo. No sé qué nos depara el futuro, pero hay algo de lo que estoy seguro: <strong>quiero que seas tú, siempre tú.</strong>
+                        </p>
+                
+                        <p class="destacado">
+                            Feliz primer año, mi amor. Gracias por hacer de mi vida un lugar más hermoso. <span class="emoji">💖</span>
+                        </p>
+                
+                        <div class="firma">
+                            <span class="amor">Con todo mi amor,</span>
+                            <span class="nombre">Cristian</span>
+                        </div>
                     </div>
                 </div>
             </div>
