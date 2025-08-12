@@ -1,569 +1,1066 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para Carola</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Álbum Mágico para Carola</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --primary: #fff;
-            --bg-color: rgb(5, 53, 61);
-            --bg-envelope-color: #f5edd1;
-            --envelope-tab: #ecdeb8;
-            --envelope-cover: #e6cfa7;
-            --shadow-color: rgba(0, 0, 0, 0.2);
-            --txt-color: #444;
-            --heart-color: rgb(139, 3, 128);
-            --gradient-start: #1a4f56;
-            --gradient-end: #0a2226;
-        }
+      :root {
+        --primary: #f4f1e8;
+        --bg-color: #0d1421;
+        --book-cover: #8b4513;
+        --book-spine: #654321;
+        --page-color: #fefdfb;
+        --text-color: #1a1a1a;
+        --gold: #d4af37;
+        --crimson: #a91b1b;
+        --forest-green: #2d5016;
+        --bronze: #cd7f32;
+        --shadow-color: rgba(0, 0, 0, 0.35);
+        --magical-glow: #ffd700;
+      }
 
-        body {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+      body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        background: radial-gradient(
+          ellipse at center,
+          #1a237e 0%,
+          #0d1421 100%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        overflow: hidden;
+        font-family: "Cinzel", serif;
+      }
 
-        .container {
-            height: 100vh;
-            width: 100vw;
-            display: grid;
-            place-items: center;
-            position: relative;
-        }
+      .container {
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 20px;
+        box-sizing: border-box;
+      }
 
-        .envelope-wrapper {
-            background: var(--bg-envelope-color);
-            box-shadow: 0 0 40px var(--shadow-color);
-            transition: all 0.5s ease;
-            cursor: pointer;
-        }
+      .magical-book {
+        width: 800px;
+        height: 700px;
+        position: relative;
+        cursor: pointer;
+        transform-style: preserve-3d;
+        transition: all 0.8s ease;
+        perspective: 1600px;
+        will-change: transform;
+      }
 
-        .envelope {
-            position: relative;
-            width: 300px;
-            height: 230px;
-        }
+      .book-cover {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          var(--book-cover),
+          var(--book-spine)
+        );
+        border: 3px solid var(--gold);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 12px 30px var(--shadow-color); /* más ligero */
+        backface-visibility: hidden;
+        z-index: 2;
+      }
 
-        .envelope::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            z-index: 2;
-            border-top: 130px solid var(--envelope-tab);
-            border-right: 150px solid transparent;
-            border-left: 150px solid transparent;
-            transform-origin: top;
-            transition: all 0.5s ease-in-out 0.7s;
-        }
+      .cover-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        flex: 1;
+        justify-content: center;
+      }
 
-        .envelope::after {
-            content: "";
-            position: absolute;
-            z-index: 2;
-            width: 0px;
-            height: 0px;
-            border-top: 130px solid transparent;
-            border-right: 150px solid var(--envelope-cover);
-            border-bottom: 100px solid var(--envelope-cover);
-            border-left: 150px solid var(--envelope-cover);
-        }
+      .book-title {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 3em;
+        color: var(--gold);
+        text-align: center;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        letter-spacing: 2px;
+        line-height: 1.1;
+      }
 
-        .letter {
-            position: absolute;
-            right: 20%;
-            bottom: 0;
-            width: 54%;
-            height: 80%;
-            background: var(--primary);
-            transition: all 0.5s ease-in-out;
-            box-shadow: 0 0 5px var(--shadow-color);
-            padding: 20px;
-            background: linear-gradient(45deg, #fff 85%, #f0f0f0 100%);
-        }
-        
-        .text {
-            font-family: 'Gill Sans', sans-serif;
-            color: var(--txt-color);
-            text-align: left;
-            font-size: 10px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease-in-out;
-            line-height: 1.8;
-            letter-spacing: 0.3px;
-        }
+      .book-subtitle {
+        font-size: 1.6em;
+        color: var(--bronze);
+        text-align: center;
+        font-style: italic;
+        margin: 0;
+        line-height: 1.2;
+      }
 
-        .flap .text {
-            opacity: 1;
-            transform: translateY(0);
-            font-size: 16px;
-        }
+      .hogwarts-crest {
+        font-size: 3.5em;
+        margin: 0;
+        animation: gentleGlow 2s ease-in-out infinite alternate;
+      }
 
-        .text h1 {
-            color: var(--heart-color);
-            text-align: center;
-            font-size: 2em;
-            margin-bottom: 1.5em;
-            font-family: 'Gill Sans', serif;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
+      .cover-footer {
+        color: var(--gold);
+        font-size: 0.9em;
+        text-align: center;
+        margin: 0;
+      }
 
-        .text p {
-            margin-bottom: 1.5em;
-            text-align: justify;
-        }
+      /* Contenedor de fotos estandarizado */
+      .photo-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 30px auto;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        background: rgba(212, 175, 55, 0.05);
+        border: 3px solid var(--gold);
+        box-shadow: 0 4px 14px rgba(212, 175, 55, 0.28); /* más ligero */
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
 
-        .text .saludo {
-            font-size: 1.2em;
-            color: var(--heart-color);
-            margin-bottom: 1.5em;
-        }
+      .book-cover .photo-container {
+        max-width: 250px;
+        margin: 0;
+      }
 
-        .text .destacado {
-            font-style: italic;
-            color: var(--heart-color);
-        }
+      .photo-container:hover {
+        transform: scale(1.015);
+        box-shadow: 0 6px 18px rgba(212, 175, 55, 0.35);
+      }
 
-        .text .firma {
-            text-align: right;
-            margin-top: 2em;
-            font-style: italic;
-        }
+      .photo-container img {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: contain;
+        object-position: center;
+        transition: transform 0.3s ease;
+        display: block;
+      }
 
-        .text .firma .amor {
-            display: block;
-            margin-bottom: 0.5em;
-            color: #666;
-        }
+      .book-cover .photo-container img {
+        height: 250px;
+        object-fit: cover;
+      }
 
-        .text .firma .nombre {
-            font-size: 1.3em;
-            color: var(--heart-color);
-            font-weight: bold;
-            font-style: normal;
-        }
+      .photo-container:hover img {
+        transform: scale(1.05);
+      }
 
-        .text br {
-            margin-bottom: 0.8em;
-            content: "";
-            display: block;
-        }
+      .photo-placeholder {
+        width: 100%;
+        height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-color);
+        font-style: italic;
+        font-size: 16px;
+        text-align: center;
+        flex-direction: column;
+        gap: 15px;
+      }
 
-        .text strong {
-            color: var(--heart-color);
-        }
+      .photo-caption {
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        color: var(--gold);
+        padding: 20px 15px 15px;
+        font-style: italic;
+        font-size: 14px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
 
-        .flap > .envelope > .letter {
-            padding: 50px;
-        }
+      .photo-container:hover .photo-caption {
+        opacity: 1;
+      }
 
-        /* Estilo para emojis */
-        .emoji {
-            font-size: 1.2em;
-            vertical-align: middle;
-            margin: 0 3px;
-        }
-        
-        .flap > .envelope::before {
-            transform: rotateX(180deg);
-            z-index: 0;
-        }
-        
-        .flap > .envelope > .letter {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 80vh; /* Cambiado para mejor respuesta móvil */
-            max-width: 90vw;
-            max-height: 90vh;
-            z-index: 1000;
-            border-radius: 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            padding: 40px;
-            background: #fff;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: var(--heart-color) #f0f0f0;
-        }
+      .expand-hint {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: var(--gold);
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+      }
 
-        /* Estilizar el scrollbar para navegadores webkit (Chrome, Safari, etc) */
-        .flap > .envelope > .letter::-webkit-scrollbar {
-            width: 8px;
-        }
+      .photo-container:hover .expand-hint {
+        opacity: 1;
+      }
 
-        .flap > .envelope > .letter::-webkit-scrollbar-track {
-            background: #f0f0f0;
-            border-radius: 4px;
-        }
+      /* Modal imágenes: limitar tamaño por defecto */
+      .image-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        padding: 16px;
+      }
 
-        .flap > .envelope > .letter::-webkit-scrollbar-thumb {
-            background-color: var(--heart-color);
-            border-radius: 4px;
-            border: 2px solid #f0f0f0;
-        }
+      .image-modal.active {
+        opacity: 1;
+        visibility: visible;
+      }
 
-        /* Asegurar que el contenido del texto tenga espacio adecuado */
-        .flap > .envelope > .letter .text {
-            padding-right: 20px; /* Espacio para el scrollbar */
-            padding-bottom: 20px; /* Espacio al final del contenido */
-        }
-        
-        .heart {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 15px;
-            height: 15px;
-            background: var(--heart-color);
-            z-index: 4;
-            transform: translate(-50%, -20%) rotate(45deg);
-            transition: all 0.5s ease-in-out;
-            box-shadow: 0 1px 6px var(--shadow-color);
-            cursor: pointer;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
+      .modal-content {
+        position: relative;
+        max-width: 40vw; /* antes 90vw */
+        max-height: 40vh; /* antes 90vh */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-        .heart:before, 
-        .heart:after {
-            content: "";
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background-color: var(--heart-color);
-            border-radius: 50%;
-        }
+      .modal-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5); /* más ligero */
+      }
 
-        .heart:before {
-            top: -7.5px;
-        }
+      .modal-close {
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        background: var(--crimson);
+        border: none;
+        color: var(--gold);
+        font-size: 32px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
 
-        .heart:after {
-            right: 7.5px;
-        }
+      .modal-close:hover {
+        background: var(--gold);
+        color: var(--crimson);
+        transform: scale(1.1);
+      }
 
-        .flap > .heart {
-            opacity: 0;
-        }
+      .modal-caption {
+        position: absolute;
+        bottom: -100px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--gold);
+        font-style: italic;
+        text-align: center;
+        font-size: 16px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px 20px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
 
-        @keyframes pulse {
-            0% { transform: translate(-50%, -20%) rotate(45deg) scale(1); }
-            50% { transform: translate(-50%, -20%) rotate(45deg) scale(1.2); }
-            100% { transform: translate(-50%, -20%) rotate(45deg) scale(1); }
-        }
+      /* Páginas del libro */
+      .book-pages {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: var(--page-color);
+        border: 2px solid var(--gold);
+        border-radius: 12px;
+        opacity: 0;
+        transform: translateZ(-10px);
+        transition: all 0.8s ease;
+        overflow: hidden;
+        z-index: 1;
+        pointer-events: none;
+      }
 
-        .close-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 1001;
-        }
+      .page {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        padding: 60px 50px;
+        box-sizing: border-box;
+        background: var(--page-color);
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.6s ease;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--gold) var(--page-color);
+      }
 
-        .flap .close-button {
-            opacity: 1;
-        }
+      .page.active {
+        opacity: 1;
+        transform: translateX(0);
+      }
 
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s;
-            z-index: 999;
-        }
+      .page::-webkit-scrollbar {
+        width: 6px;
+      }
 
-        .flap ~ .overlay {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        /* Previous styles remain the same */
-        /* Adding animation styles */
-        .flower {
-            position: absolute;
-            pointer-events: none;
-            animation: floatComplex 8s ease-in-out infinite;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
-            z-index: 1002;
-        }
+      .page::-webkit-scrollbar-track {
+        background: var(--page-color);
+      }
 
-        .flower::before {
-            content: '🌸';
-            font-size: 20px;
-            animation: rotatePetal 3s linear infinite;
-            display: block;
-        }
+      .page::-webkit-scrollbar-thumb {
+        background-color: var(--gold);
+        border-radius: 3px;
+      }
 
-        @keyframes floatComplex {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-            33% {
-                transform: translate(20px, -30px) rotate(120deg);
-            }
-            66% {
-                transform: translate(-20px, -15px) rotate(240deg);
-            }
-            100% {
-                transform: translate(0, 0) rotate(360deg);
-            }
-        }
+      .page-content {
+        color: var(--text-color);
+        line-height: 1.8;
+        font-size: 18px;
+        max-width: 100%;
+        min-height: calc(100% - 40px);
+        display: flex;
+        flex-direction: column;
+        font-weight: 500;
+        gap: 20px;
+      }
 
-        @keyframes rotatePetal {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+      .page-content h1 {
+        font-family: "Cinzel Decorative", serif;
+        color: var(--crimson);
+        text-align: center;
+        font-size: 2.5em;
+        margin: 0 0 40px 0;
+        border-bottom: 3px solid var(--gold);
+        padding-bottom: 20px;
+        flex-shrink: 0;
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
 
-        .sparkle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: white;
-            border-radius: 50%;
-            filter: blur(1px);
-            animation: sparklePlus 1.5s ease-in-out infinite;
-            opacity: 0;
-            z-index: 1002;
-        }
+      .page-content h2 {
+        font-family: "Cinzel Decorative", serif;
+        color: var(--forest-green);
+        font-size: 1.8em;
+        margin: 40px 0 20px 0;
+        text-align: center;
+        flex-shrink: 0;
+        font-weight: 600;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+      }
 
-        @keyframes sparklePlus {
-            0% { transform: scale(0) rotate(0deg); opacity: 0; }
-            50% { transform: scale(1) rotate(180deg); opacity: 0.8; }
-            100% { transform: scale(0) rotate(360deg); opacity: 0; }
-        }
+      .page-content .saludo {
+        font-size: 1.4em;
+        color: var(--crimson);
+        margin: 0 0 30px 0;
+        font-weight: 700;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+      }
 
-        .butterfly {
-            position: absolute;
-            pointer-events: none;
-            font-size: 24px;
-            animation: naturalButterflyFlight 12s ease-in-out infinite;
-            z-index: 1002;
-        }
+      .page-content p {
+        margin: 0 0 25px 0;
+        text-align: justify;
+        font-size: 18px;
+        line-height: 1.8;
+        color: var(--text-color);
+      }
 
-        @keyframes naturalButterflyFlight {
-            0%, 100% {
-                transform: 
-                    translate(-100vw, 50vh) 
-                    rotate(0deg) 
-                    scale(1) 
-                    skew(10deg, 5deg);
-                opacity: 0;
-            }
-            25% {
-                transform: 
-                    translate(30vw, 35vh) 
-                    rotate(140deg) 
-                    scale(1.2) 
-                    skew(-5deg, 3deg);
-                opacity: 0.7;
-            }
-            50% {
-                transform: 
-                    translate(60vw, 65vh) 
-                    rotate(280deg) 
-                    scale(0.9) 
-                    skew(8deg, -4deg);
-                opacity: 1;
-            }
-            75% {
-                transform: 
-                    translate(90vw, 45vh) 
-                    rotate(100deg) 
-                    scale(1.1) 
-                    skew(-3deg, 6deg);
-                opacity: 0.8;
-            }
-        }
+      .page-content .destacado {
+        font-style: italic;
+        color: var(--crimson);
+        font-weight: 700;
+        font-size: 1.1em;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+        margin: 30px 0;
+      }
 
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 1s ease-in-out infinite;
-        }
+      .page-content .firma {
+        text-align: right;
+        margin-top: auto;
+        padding-top: 40px;
+        font-style: italic;
+        flex-shrink: 0;
+      }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 1; }
+      .page-content .firma .amor {
+        display: block;
+        margin-bottom: 0.7em;
+        color: var(--text-color);
+        font-size: 1.1em;
+        font-weight: 500;
+      }
+
+      .page-content .firma .nombre {
+        font-size: 1.7em;
+        color: var(--crimson);
+        font-weight: bold;
+        font-style: normal;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      .page-content em {
+        color: var(--forest-green);
+        font-style: italic;
+        font-weight: 600;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+      }
+
+      .page-content strong {
+        color: var(--crimson);
+        font-weight: 700;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Navegación y estados */
+      .navigation {
+        position: absolute;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 20px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+      }
+
+      .nav-btn {
+        background: var(--gold);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        color: var(--text-color);
+        font-family: "Cinzel", serif;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        font-size: 14px;
+      }
+
+      .nav-btn:hover {
+        background: var(--bronze);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+      }
+
+      .nav-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .page-indicator {
+        position: absolute;
+        bottom: 75px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+      }
+
+      .indicator-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(212, 175, 55, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .indicator-dot.active {
+        background: var(--gold);
+        transform: scale(1.2);
+      }
+
+      .open .book-cover {
+        transform: rotateY(-160deg);
+        pointer-events: none;
+      }
+      .open .book-pages {
+        opacity: 1;
+        transform: translateZ(0);
+        pointer-events: auto;
+      }
+      .open .navigation,
+      .open .page-indicator {
+        opacity: 1;
+      }
+
+      .close-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--crimson);
+        border: none;
+        color: var(--gold);
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 1001;
+      }
+
+      .open .close-button {
+        opacity: 1;
+      }
+
+      /* Efectos mágicos más ligeros */
+      .magical-particle {
+        position: absolute;
+        width: 3px; /* más pequeño */
+        height: 3px;
+        background: var(--magical-glow);
+        border-radius: 50%;
+        pointer-events: none;
+        animation: magicalFloat 1.2s ease-in-out forwards; /* antes 3s */
+        opacity: 0;
+      }
+
+      .floating-icon {
+        position: absolute;
+        font-size: 20px;
+        pointer-events: none;
+        animation: floatAround 8s ease-in-out infinite;
+        opacity: 0.6;
+      }
+
+      @keyframes magicalFloat {
+        0% {
+          transform: translateY(0) scale(0);
+          opacity: 0;
         }
+        50% {
+          transform: translateY(-70px) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-120px) scale(0.9);
+          opacity: 0;
+        }
+      }
+
+      @keyframes gentleGlow {
+        0% {
+          text-shadow: 0 0 10px var(--magical-glow);
+        }
+        100% {
+          text-shadow: 0 0 20px var(--magical-glow),
+            0 0 30px var(--magical-glow);
+        }
+      }
+
+      @keyframes floatAround {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        25% {
+          transform: translate(50px, -30px) rotate(90deg);
+        }
+        50% {
+          transform: translate(-30px, -50px) rotate(180deg);
+        }
+        75% {
+          transform: translate(-50px, 30px) rotate(270deg);
+        }
+      }
+
+      /* Resp: modal más grande solo en pantallas pequeñas */
+      @media (max-width: 1024px) {
+        .modal-content {
+          max-width: 80vw;
+          max-height: 80vh;
+        }
+      }
+      @media (max-width: 768px) {
+        .modal-content {
+          max-width: 85vw;
+          max-height: 80vh;
+        }
+      }
+      @media (max-width: 480px) {
+        .modal-content {
+          max-width: 95vw;
+          max-height: 80vh;
+        }
+      }
+
+      /* Accesibilidad: reducir movimiento si el usuario lo pide */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="envelope-wrapper">
-            <div class="envelope">
-                <div class="letter">
-                    <div class="text">
-                        <h1>Para mi amorcito <span class="emoji">🌹</span></h1>
-                        
-                        <p class="saludo">
-                            Mi amor <span class="emoji">🌻</span>,
-                        </p>
-                
-                        <p>
-                            Este 14 de febrero celebramos nuestro primer año juntos, y quiero aprovechar esta carta para recordarte cuánto significas para mí.
-                        </p>
-                
-                        <p>
-                            Nos conocimos un 7 de noviembre de 2023 en el trabajo. Al principio, no imaginaba que alguien tan especial como tú llegaría a ser una persona tan importante en mi vida. Pero con el tiempo, fui descubriendo lo increíble que eres. Me fui enamorando de tu hermosa personalidad, de tu manera única de ver el mundo y de ese brillo en tus ojos cuando hablas de lo que amas.
-                        </p>
-                
-                        <p>
-                            A lo largo de este año hemos compartido tantos momentos inolvidables: nuestras conversaciones que parecen no tener fin, nuestras risas espontáneas, los abrazos que se sienten con tanta calidez y todas esas pequeñas cosas que hacen que cada día a tu lado sea único.
-                        </p>
-                
-                        <p>
-                            Eres mi compañera, mi apoyo y mi felicidad. No hay un solo día en el que no agradezca haberte encontrado. Me has enseñado lo que es el amor verdadero, ese que se construye con paciencia, con detalles, con comprensión y con cariño incondicional.
-                        </p>
-                
-                        <p>
-                            Este es solo el comienzo de nuestra historia. Quiero seguir viviendo momentos inolvidables a tu lado, seguir creciendo juntos y demostrando cada día cuánto te amo. No sé qué nos depara el futuro, pero hay algo de lo que estoy seguro: <strong>quiero que seas tú, siempre tú.</strong>
-                        </p>
-                
-                        <p class="destacado">
-                            Feliz primer año, mi amor. Gracias por hacer de mi vida un lugar más hermoso. <span class="emoji">💖</span>
-                        </p>
-                
-                        <div class="firma">
-                            <span class="amor">Con todo mi amor,</span>
-                            <span class="nombre">Cristian</span>
-                        </div>
-                    </div>
-                </div>
+      <div class="magical-book" id="magicalBook">
+        <div class="book-cover">
+          <div class="cover-content">
+            <div class="book-title">Álbum Mágico</div>
+            <div class="book-subtitle">Para mi amorcito Carola</div>
+            <div class="hogwarts-crest">🏰</div>
+            <div class="photo-container">
+              <img
+                src="images/Portada.jpg"
+                alt="Foto romántica de portada"
+                loading="eager"
+                fetchpriority="high"
+              />
+              <div class="expand-hint">🔍 Click para ampliar</div>
+              <div class="photo-caption">Mi hermosa novia ✨</div>
             </div>
-            <div class="heart"></div>
+          </div>
+          <div class="cover-footer">✨ Toca para abrir ✨</div>
         </div>
-        <button class="close-button">×</button>
-        <div class="overlay"></div>
+
+        <div class="book-pages">
+          <!-- Página 1: Carta Original -->
+          <div class="page active" data-page="1">
+            <div class="page-content">
+              <h1>Para mi amorcito 🌹</h1>
+
+              <p class="saludo">Mi amor 🌻,</p>
+
+              <p>
+                Este 14 de febrero celebramos nuestro primer año juntos, y
+                quiero aprovechar esta carta para recordarte cuánto significas
+                para mí.
+              </p>
+
+              <p>
+                Nos conocimos un 7 de noviembre de 2023 en el trabajo. Al
+                principio, no imaginaba que alguien tan especial como tú
+                llegaría a ser una persona tan importante en mi vida. Pero con
+                el tiempo, fui descubriendo lo increíble que eres. Me fui
+                enamorando de tu hermosa personalidad, de tu manera única de ver
+                el mundo y de ese brillo en tus ojos cuando hablas de lo que
+                amas.
+              </p>
+
+              <p>
+                A lo largo de este año hemos compartido tantos momentos
+                inolvidables: nuestras conversaciones que parecen no tener fin,
+                nuestras risas espontáneas, los abrazos que se sienten con tanta
+                calidez y todas esas pequeñas cosas que hacen que cada día a tu
+                lado sea único.
+              </p>
+
+              <p>
+                Eres mi compañera, mi apoyo y mi felicidad. No hay un solo día
+                en el que no agradezca haberte encontrado. Me has enseñado lo
+                que es el amor verdadero, ese que se construye con paciencia,
+                con detalles, con comprensión y con cariño incondicional.
+              </p>
+
+              <p>
+                Este es solo el comienzo de nuestra historia. Quiero seguir
+                viviendo momentos inolvidables a tu lado, seguir creciendo
+                juntos y demostrando cada día cuánto te amo. No sé qué nos
+                depara el futuro, pero hay algo de lo que estoy seguro:
+                <strong>quiero que seas tú, siempre tú.</strong>
+              </p>
+
+              <p class="destacado">
+                Feliz primer año, mi amor. Gracias por hacer de mi vida un lugar
+                más hermoso. 💖
+              </p>
+
+              <div class="firma">
+                <span class="amor">Con todo mi amor,</span>
+                <span class="nombre">Cristian</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Página 2: Nuestros Momentos Mágicos -->
+          <div class="page" data-page="2">
+            <div class="page-content">
+              <h1>Nuestros Momentos Mágicos ✨</h1>
+
+              <h2>Viaje a baños</h2>
+
+              <div class="photo-container">
+                <img
+                  src="images/Primera_cita.jpg"
+                  alt="Nuestra primera cita"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="expand-hint">🔍 Click para ampliar</div>
+                <div class="photo-caption">
+                  Te quiero con todo mi corazón... 💕
+                </div>
+              </div>
+
+              <p>
+                <em>Atesoraré siempre nuestro viaje a Baños y todos los recuerdos inolvidables que creamos juntos. Aunque me quedé con ganas de vivir más aventuras a tu lado, sé que el futuro nos traerá muchas más. De eso estoy seguro</em>
+                </em>
+              </p>
+
+              <h2>La mejor salida de la Ofi contigo</h2>
+              <div class="photo-container">
+                <img
+                  src="images/salida.jpg"
+                  alt="Nuestro viaje a Baños"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="expand-hint">🔍 Click para ampliar</div>
+                <div class="photo-caption">
+                  Salidita feliz💕
+                </div>
+              </div>
+              <p>
+                <em
+                  >Recuerdo perfectamente esa salida con los de la ofi. Para ser sincero, aunque estábamos en grupo, mi única alegría ese día era estar a tu lado. En mi mente, el resto desapareció y solo existías tú. Y pensar que en ese momento supe que quería seguir creando recuerdos contigo...</em
+                >
+              </p>
+            </div>
+          </div>
+
+          <!-- Página 3: Momentos Especiales -->
+          <div class="page" data-page="3">
+            <div class="page-content">
+              <h1>Momentos que Brillan ⭐</h1>
+
+              <h2>Portada de tu libro</h2>
+              <div class="photo-container">
+                <img
+                  src="images/portada_libro.jpg"
+                  alt="Nuestra celebración especial"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="expand-hint">🔍 Click para ampliar</div>
+                <div class="photo-caption">
+                  Celebrando juntos momentos especiales 🎉
+                </div>
+              </div>
+              <p>
+                <em
+                  >La vez que me contabas sobre tus sueños y aspiraciones, me di cuenta de lo afortunado que soy de tenerte en mi vida, la oportunidad de verte crecer y brillar
+                  es algo que me llena mucho, me dio tanta alegria cuando me mostraste la portada de tu libro, al verlo sentí las ganas que tenía de leerlo y apoyarte en cada paso de tu camino.</em
+                >
+              </p>
+
+              <h2>Primeras flores</h2>
+              <div class="photo-container">
+                <img
+                  src="images/primeras_flores.jpg"
+                  alt="Nuestras primeras flores"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="expand-hint">🔍 Click para ampliar</div>
+                <div class="photo-caption">
+                  Las primeras flores de nuestro amor 💕
+                </div>
+              </div>
+              <p>
+                <em
+                  >Me sentía muy nervioso ese día, pero solo pensar que estaría a tu lado siempre me llenaba de valentía para hacerlo realidad
+                  y estar con una persona tan maravillosa como tú.</em
+                >
+              </p>
+            </div>
+          </div>
+
+          <!-- Página 4: Nuestro Futuro -->
+          <div class="page" data-page="4">
+            <div class="page-content">
+              <h1>Nuestro Futuro Mágico 🔮</h1>
+
+              <p style="text-align: center; font-size: 1.1em; margin: 2em 0">
+                <strong
+                  >Como en los mejores cuentos de hadas y las historias más
+                  mágicas...</strong
+                >
+              </p>
+
+              <div class="photo-container">
+                <img
+                  src="images/futuro_juntos.png"
+                  alt="Nuestros sueños futuros"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class="expand-hint">🔍 Click para ampliar</div>
+                <div class="photo-caption">
+                  Aurora? 💍✨
+                </div>
+              </div>
+
+              <p>
+                Quiero que sepas que cada día a tu lado se siente como vivir en
+                un mundo de algo que nunca he sentido. Qué hechizo lanzaste en mi? Jajaja
+                Espero estar contigo en cada aventura, en cada risa y en cada lágrima de felicidad.
+              </p>
+
+              <p
+                style="
+                  text-align: center;
+                  font-style: italic;
+                  color: var(--crimson);
+                  font-size: 1.2em;
+                  margin-top: 2em;
+                "
+              >
+                "Después de todo este tiempo..."<br />
+                "Siempre." 💕
+              </p>
+
+              <div class="firma">
+                <span class="amor">Para siempre tuyo,</span>
+                <span class="nombre">Cristian ⚡</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navigation">
+          <button class="nav-btn" id="prevBtn">← Anterior</button>
+          <button class="nav-btn" id="nextBtn">Siguiente →</button>
+        </div>
+
+        <div class="page-indicator">
+          <div class="indicator-dot active"></div>
+          <div class="indicator-dot"></div>
+          <div class="indicator-dot"></div>
+          <div class="indicator-dot"></div>
+        </div>
+      </div>
+
+      <button class="close-button" id="closeBtn">×</button>
     </div>
-    <!-- Previous HTML remains the same -->
+
+    <!-- Modal -->
+    <div class="image-modal" id="imageModal">
+      <div class="modal-content">
+        <img class="modal-image" id="modalImage" src="" alt="" />
+        <button class="modal-close" id="modalClose">×</button>
+        <div class="modal-caption" id="modalCaption"></div>
+      </div>
+    </div>
+
     <script>
-        const envelope = document.querySelector('.envelope-wrapper');
-        const container = document.querySelector('.container');
-        const closeButton = document.querySelector('.close-button');
-        const overlay = document.querySelector('.overlay');
-        
-        const flowerEmojis = ['🌸', '🌺', '🌹', '🌷', '💐', '🌻'];
-        const butterflyEmojis = ['🦋', '🦋'];
+      const magicalBook = document.getElementById("magicalBook");
+      const pages = document.querySelectorAll(".page");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const closeBtn = document.getElementById("closeBtn");
+      const indicators = document.querySelectorAll(".indicator-dot");
+      const container = document.querySelector(".container");
 
-        function createStars() {
-            for(let i = 0; i < 50; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.top = `${Math.random() * 100}%`;
-                star.style.animationDelay = `${Math.random() * 1}s`;
-                container.appendChild(star);
-            }
-        }
+      // Modal
+      const imageModal = document.getElementById("imageModal");
+      const modalImage = document.getElementById("modalImage");
+      const modalClose = document.getElementById("modalClose");
+      const modalCaption = document.getElementById("modalCaption");
 
-        function createFlower() {
-            const flower = document.createElement('div');
-            flower.className = 'flower';
-            flower.style.left = `${Math.random() * 100}%`;
-            flower.style.top = `${Math.random() * 100}%`;
-            flower.style.fontSize = `${Math.random() * 10 + 15}px`;
-            flower.textContent = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
-            container.appendChild(flower);
+      let currentPage = 1;
+      const totalPages = pages.length;
 
-            setTimeout(() => {
-                flower.remove();
-            }, 8000);
-        }
+      const magicalIcons = ["⚡", "🦉", "🔮", "✨", "🌟", "🏰", "📜", "🗝️"];
 
-        function createButterfly() {
-            const butterfly = document.createElement('div');
-            butterfly.className = 'butterfly';
-            butterfly.textContent = butterflyEmojis[Math.floor(Math.random() * butterflyEmojis.length)];
-            butterfly.style.animationDuration = `${20 + Math.random() * 4}s`;
-            butterfly.style.animationDelay = `-${Math.random() * 20}s`;
-            container.appendChild(butterfly);
-    
-            setTimeout(() => {
-                butterfly.remove();
-            }, 12000);
-        }
+      function createMagicalParticle(x, y) {
+        const particle = document.createElement("div");
+        particle.className = "magical-particle";
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.backgroundColor = `hsl(${
+          Math.random() * 60 + 30
+        }, 100%, 70%)`;
+        container.appendChild(particle);
+        setTimeout(() => particle.remove(), 1200); // vida más corta
+      }
 
-        function createSparkle(x, y) {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            sparkle.style.left = `${x}px`;
-            sparkle.style.top = `${y}px`;
-            sparkle.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 75%)`;
-            container.appendChild(sparkle);
+      // Limitar iconos flotantes activos
+      let activeIcons = 0;
+      const maxIcons = 5;
+      function createFloatingIcon() {
+        if (activeIcons >= maxIcons) return;
+        const icon = document.createElement("div");
+        icon.className = "floating-icon";
+        icon.textContent =
+          magicalIcons[Math.floor(Math.random() * magicalIcons.length)];
+        icon.style.left = `${Math.random() * 100}%`;
+        icon.style.top = `${Math.random() * 100}%`;
+        icon.style.animationDelay = `${Math.random() * 8}s`;
+        container.appendChild(icon);
+        activeIcons++;
+        setTimeout(() => {
+          icon.remove();
+          activeIcons--;
+        }, 8000);
+      }
 
-            setTimeout(() => {
-                sparkle.remove();
-            }, 1500);
-        }
-
-        createStars();
-
-        envelope.addEventListener('click', (e) => {
-            if (!envelope.classList.contains('flap')) {
-                envelope.classList.add('flap');
-                
-                for(let i = 0; i < 12; i++) {
-                    const angle = (i / 12) * Math.PI * 2;
-                    const radius = 50;
-                    setTimeout(() => {
-                        createSparkle(
-                            e.clientX + Math.cos(angle) * radius,
-                            e.clientY + Math.sin(angle) * radius
-                        );
-                    }, i * 50);
-                }
-
-                if(envelope.classList.contains('flap')) {
-                    for(let i = 0; i < 15; i++) {
-                        setTimeout(createFlower, i * 200);
-                    }
-                    for(let i = 0; i < 3; i++) {
-                        setTimeout(createButterfly, i * 500);
-                    }
-                }
-            }
+      function updatePage() {
+        pages.forEach((page, index) => {
+          page.classList.toggle("active", index === currentPage - 1);
         });
-
-        setInterval(createFlower, 3000);
-        setInterval(createButterfly, 5000);
-
-        let timeout;
-        document.addEventListener('mousemove', (e) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                createSparkle(e.clientX, e.clientY);
-            }, 50);
+        indicators.forEach((dot, index) => {
+          dot.classList.toggle("active", index === currentPage - 1);
         });
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+      }
 
-        closeButton.addEventListener('click', (e) => {
+      function openBook() {
+        magicalBook.classList.add("open");
+        // Menos partículas al abrir
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            createMagicalParticle(
+              Math.random() * window.innerWidth,
+              Math.random() * window.innerHeight
+            );
+          }, i * 90);
+        }
+      }
+
+      function closeBook() {
+        magicalBook.classList.remove("open");
+        currentPage = 1;
+        updatePage();
+      }
+
+      // Abrir libro solo si se hace click fuera de una foto
+      magicalBook.addEventListener(
+        "click",
+        (e) => {
+          if (
+            !magicalBook.classList.contains("open") &&
+            !e.target.closest(".photo-container")
+          ) {
+            openBook();
+          }
+        },
+        { passive: true }
+      );
+
+      prevBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (currentPage > 1) {
+          currentPage--;
+          updatePage();
+        }
+      });
+      nextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (currentPage < totalPages) {
+          currentPage++;
+          updatePage();
+        }
+      });
+      closeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeBook();
+      });
+
+      // Modal imágenes
+      document.addEventListener("click", (e) => {
+        const photoContainer = e.target.closest(".photo-container");
+        if (photoContainer && photoContainer.querySelector("img")) {
+          const img = photoContainer.querySelector("img");
+          const caption = photoContainer.querySelector(".photo-caption");
+          if (img && img.src) {
             e.stopPropagation();
-            envelope.classList.remove('flap');
-        });
+            e.preventDefault();
+            modalImage.src = img.src;
+            modalImage.alt = img.alt || "";
+            modalCaption.textContent = caption
+              ? caption.textContent
+              : img.alt || "";
+            imageModal.classList.add("active");
+            document.body.style.overflow = "hidden";
+          }
+        }
+      });
 
-        overlay.addEventListener('click', (e) => {
-            envelope.classList.remove('flap');
-        });
+      function closeImageModal() {
+        imageModal.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+      modalClose.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeImageModal();
+      });
+      imageModal.addEventListener("click", (e) => {
+        if (e.target === imageModal) closeImageModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && imageModal.classList.contains("active"))
+          closeImageModal();
+      });
+
+      // Iconos flotantes menos frecuentes
+      setInterval(createFloatingIcon, 6000);
+      for (let i = 0; i < 2; i++) setTimeout(createFloatingIcon, i * 1000);
+
+      // Partículas en mousemove (throttle fuerte)
+      let lastParticleTs = 0;
+      document.addEventListener(
+        "mousemove",
+        (e) => {
+          const now = performance.now();
+          if (now - lastParticleTs > 250 && Math.random() > 0.97) {
+            createMagicalParticle(e.clientX, e.clientY);
+            lastParticleTs = now;
+          }
+        },
+        { passive: true }
+      );
+
+      // Init
+      updatePage();
     </script>
-</body>
+  </body>
 </html>
