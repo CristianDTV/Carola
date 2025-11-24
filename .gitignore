@@ -1,0 +1,72 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Production
+dist
+dist-ssr
+*.local
+
+# Testing
+coverage
+
+# Editor / IDE directories
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs (Archivos de registro de errores)
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.// filepath: c:\Users\LEGION\OneDrive - Escuela Politécnica Nacional\Documentos\Proyecto_Carola\.gitignore
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Production
+dist
+dist-ssr
+*.local
+
+# Testing
+coverage
+
+# Editor / IDE directories
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs (Archivos de registro de errores)
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS specific (Archivos basura de Windows/Mac)
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Environment variables (Seguridad)
+.env
+.env.production
+.env.development
+.env.test
