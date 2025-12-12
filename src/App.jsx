@@ -518,31 +518,34 @@ const RomanticCountdown = () => {
                   <p>Mi amor,</p>
                   
                   <p>
-                    Cada día que pasa sin verte se siente como una eternidad. He estado contando los días, 
-                    las horas, los minutos hasta que finalmente pueda volver a abrazarte, a sentir tu calor 
-                    y a perderme en tu mirada.
+                    CAda día que pasa sin verte se siente como una eternidad. Pero por suerte estamos a pocos dias de reencontrarnos
+                    estoy muy emocionado de poder sentirte nuevamente, han sido dias complicados para nosotros dos, y tener a la 
+                    persona que amas lejos es aun más complicado, pero igual estoy muy alegre de saber todo lo que estas logrando y todo
+                    el esfuerzo que le estas metiendo, estoy muy orgullo de ti.
                   </p>
 
                   <p>
-                    Este viaje que estás haciendo desde tan lejos no es solo un viaje físico. Es el puente 
-                    que une nuestros corazones a través de miles de kilómetros. Cada milla que recorras me 
-                    acerca más a la felicidad completa.
+                    ROmpemos esa distancia el día sabado, cuando por fin pueda abrazarte y sentir tu calor, tengo pensado comprar unas flores para resibirte Jajaja,
+                    y el sabado estar juntitos comiendo algo que te guste mucho, se que has estado extrañando la comida de Ecuador, ademas de eso, tambien quiero
+                    que pases menos estres de todo lo que has estado haciendo, quiero que estes relajada y feliz.
                   </p>
 
                   <p>
-                    Preparé este calendario especial para que sepas que pienso en ti cada segundo. 
-                    El día 11 despega tu avión, y con él, mi corazón vuela hacia ti. El día 13, cuando 
-                    por fin estés aquí en Ecuador, será el día más feliz de mi vida.
+                    LA distancia existe, pero nunca hacido mas fuerte de lo que sentimos. Siento que nuestra relación se ha fortalecido
+                    a pesar de la distancia, y eso me llena de esperanza y amor por lo que viene, estamos a punto completar otra etapa juntos.
+                    A pesar que no estes conmigo en ese momento importante de mi vida, siento que tu apoyo y amor me acompañan siempre.
+                    Estaré pensando en ti en esos momento especiales, y sé que pronto podremos celebrar juntos.
                   </p>
 
                   <p>
-                    No puedo esperar para llevarte a todos mis lugares favoritos, para presentarte a mi mundo 
-                    y hacer que te enamores de este país tanto como yo me he enamorado de ti.
+                    Es un poco tiempo que nos veremos, casi un mes, pero espero que podamos aprovecharlo al máximo, quiero
+                    crear nuevos recuerdos contigo, explorar nuevos lugares, y simplemente disfrutar de cada momento a tu lado.
+                    Estoy seguro que este reencuentro será inolvidable para ambos y ps seguiremos construyendo nuestra historia juntos.
                   </p>
 
                   <p>
-                    Te amo más de lo que las palabras pueden expresar. Gracias por hacer este viaje, gracias 
-                    por ser mi persona, gracias por existir.
+                    Te amo más de lo que las palabras pueden expresar. Gracias por estar en mi vida, gracias 
+                    por ser mi persona, gracias por existir y gracias por hacerme tan feliz.
                   </p>
 
                   <div className="text-center mt-8">
