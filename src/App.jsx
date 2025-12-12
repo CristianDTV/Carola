@@ -518,29 +518,29 @@ const RomanticCountdown = () => {
                   <p>Mi amor,</p>
                   
                   <p>
-                    CAda día que pasa sin verte se siente como una eternidad. Pero por suerte estamos a pocos dias de reencontrarnos
-                    estoy muy emocionado de poder sentirte nuevamente, han sido dias complicados para nosotros dos, y tener a la 
-                    persona que amas lejos es aun más complicado, pero igual estoy muy alegre de saber todo lo que estas logrando y todo
-                    el esfuerzo que le estas metiendo, estoy muy orgullo de ti.
+                    CAda día que pasa sin verte se siente como una eternidad. Pero por suerte estamos a pocos días de reencontrarnos
+                    estoy muy emocionado de poder sentirte nuevamente, han sido días complicados para nosotros dos, y tener a la 
+                    persona que amas lejos es aún más complicado, pero igual estoy muy alegre de saber todo lo que estás logrando y todo
+                    el esfuerzo que le estás metiendo, estoy muy orgullo de ti.
                   </p>
 
                   <p>
-                    ROmpemos esa distancia el día sabado, cuando por fin pueda abrazarte y sentir tu calor, tengo pensado comprar unas flores para resibirte Jajaja,
-                    y el sabado estar juntitos comiendo algo que te guste mucho, se que has estado extrañando la comida de Ecuador, ademas de eso, tambien quiero
-                    que pases menos estres de todo lo que has estado haciendo, quiero que estes relajada y feliz.
+                    ROmpemos esa distancia el día sábado, cuando por fin pueda abrazarte y sentir tu calor, tengo pensado comprar unas flores para resibirte Jajaja,
+                    y el sábado estar juntitos comiendo algo que te guste mucho, sé que has estado extrañando la comida de Ecuador, además de eso, también quiero
+                    que pases menos estrés de todo lo que has estado haciendo, quiero que estés relajada y feliz.
                   </p>
 
                   <p>
-                    LA distancia existe, pero nunca hacido mas fuerte de lo que sentimos. Siento que nuestra relación se ha fortalecido
+                    LA distancia existe, pero nunca ha sido más fuerte de lo que sentimos. Siento que nuestra relación se ha fortalecido
                     a pesar de la distancia, y eso me llena de esperanza y amor por lo que viene, estamos a punto completar otra etapa juntos.
-                    A pesar que no estes conmigo en ese momento importante de mi vida, siento que tu apoyo y amor me acompañan siempre.
-                    Estaré pensando en ti en esos momento especiales, y sé que pronto podremos celebrar juntos.
+                    A pesar de que no estés conmigo en ese momento importante de mi vida, siento que tu apoyo y amor me acompañan siempre.
+                    Estaré pensando en ti en ese momento especiales, y sé que pronto podremos celebrar juntos.
                   </p>
 
                   <p>
                     Es un poco tiempo que nos veremos, casi un mes, pero espero que podamos aprovecharlo al máximo, quiero
                     crear nuevos recuerdos contigo, explorar nuevos lugares, y simplemente disfrutar de cada momento a tu lado.
-                    Estoy seguro que este reencuentro será inolvidable para ambos y ps seguiremos construyendo nuestra historia juntos.
+                    Estoy seguro de que este reencuentro será inolvidable para ambos y seguiremos construyendo nuestra historia juntos.
                   </p>
 
                   <p>
