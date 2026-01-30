@@ -1,649 +1,313 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plane, Heart, MapPin, X, Lock } from 'lucide-react';
+import { useEffect, useMemo, useState } from "react";
+// Asegúrate de que la ruta de la imagen sea correcta en tu proyecto real
+import foto1 from "./images/foto3.jpg";
 
-import foto1 from './images/foto1.jpg';
-import foto2 from './images/foto2.jpg';
-import foto3 from './images/foto3.jpg';
+// ==========================================
+// CONFIGURACIÓN Y CONSTANTES
+// ==========================================
+const CONFIG = {
+  name: "Carolina",
+  // Fecha fija de inicio: 30 de Enero de 2026
+  startDate: new Date("2026-01-30T00:00:00"), 
+  // Fecha meta: 1 de Mayo de 2026
+  targetDate: new Date("2026-05-01T00:00:00"),
+};
 
-const RomanticCountdown = () => {
-  const [showLetter, setShowLetter] = useState(false);
-  const [daysRemaining, setDaysRemaining] = useState(0);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  
-  // Estado para la fecha actual (para asegurar sincronización)
-  const [todayDate, setTodayDate] = useState(new Date());
+const LOVE_MESSAGES = [
+  `Un día menos para verte, ${CONFIG.name}.`,
+  `Te extraño, pero ya falta menos ✨`,
+  `Cada segundo es un paso hacia tu abrazo.`,
+  `Estamos más cerca de nuestro reencuentro 💗`,
+  `Si pudiera, adelantaría el reloj para verte.`,
+  `Guardo todos mis abrazos para ti.`,
+  `Pronto estaremos juntos, mi amor.`,
+  `Cuento los días para tenerte cerca.`,
+];
 
-  const hashPassword = async (pwd) => {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(pwd);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  };
+// ==========================================
+// UTILIDADES & HELPERS
+// ==========================================
 
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    setPasswordError('');
-    
-    const hashedInput = await hashPassword(password);
-    const correctHash = await hashPassword('Carola2025'); 
-    
-    if (hashedInput === correctHash) {
-      setShowPasswordModal(false);
-      setShowLetter(true);
-      setPassword('');
-    } else {
-      setPasswordError('❌ Clave incorrecta. Intenta de nuevo.');
-      setPassword('');
-    }
-  };
+// Generador de números pseudo-aleatorios (Determinista basado en semilla)
+const seededRandom = (seed) => {
+  let t = seed += 0x6D2B79F5;
+  t = Math.imul(t ^ t >>> 15, t | 1);
+  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+};
 
-  const handleDay13Click = () => {
-    setShowPasswordModal(true);
-  };
+const formatters = {
+  pad: (n) => String(n).padStart(2, "0"),
+  dateFull: (d) => new Intl.DateTimeFormat("es-EC", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(d),
+  dateShort: (d) => new Intl.DateTimeFormat("es-EC", { day: "numeric", month: "long", year: "numeric" }).format(d),
+};
+
+// ==========================================
+// CUSTOM HOOK: Lógica del Tiempo
+// ==========================================
+function useCountdown(startDate, targetDate) {
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
-    const calculateDays = () => {
-      const now = new Date();
-      setTodayDate(now); // Actualizamos el estado de "hoy"
-      
-      const meetingDate = new Date(2025, 11, 13); // 13 Diciembre 2025
-      meetingDate.setHours(0, 0, 0, 0);
-      now.setHours(0, 0, 0, 0);
-      
-      const diffTime = meetingDate - now;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      setDaysRemaining(diffDays > 0 ? diffDays : 0);
-    };
-    
-    calculateDays();
-    const interval = setInterval(calculateDays, 1000 * 60 * 60);
-    return () => clearInterval(interval);
+    // Actualizamos cada segundo para el reloj, o más rápido si queremos suavidad en la barra
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  // Arrays de días
-  const daysInDecember = Array.from({ length: 31 }, (_, i) => i + 1);
-  const daysInNovember = Array.from({ length: 30 }, (_, i) => i + 1);
-  
-  // AJUSTE DE CALENDARIOS 2025 (Corregido)
-  // 1 Nov 2025 es Sábado (índice 6)
-  const novemberStartDay = 6; 
-  // 1 Dic 2025 es Lunes (índice 1)
-  const startDay = 1; 
+  const totalDuration = targetDate.getTime() - startDate.getTime();
+  const elapsed = now.getTime() - startDate.getTime();
+  const remaining = Math.max(0, targetDate.getTime() - now.getTime());
 
-  // URLs de imágenes (puedes cambiarlas por las tuyas importadas)
-  const memories = [
-    { rotate: -6, delay: 0.3, image: foto1, caption: 'Nuestros recuerdos' },
-    { rotate: 3, delay: 0.5, image: foto2, caption: 'La más hermosa' },
-    { rotate: -4, delay: 0.7, image: foto3, caption: 'Inicios Juntos' }
-  ];
+  // Cálculo del porcentaje corregido y limitado entre 0 y 1
+  const progressRaw = elapsed / totalDuration;
+  const progress = Math.min(1, Math.max(0, progressRaw));
+
+  // Desglose de tiempo restante
+  const parts = {
+    days: Math.floor(remaining / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((remaining / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((remaining / 1000 / 60) % 60),
+    seconds: Math.floor((remaining / 1000) % 60),
+  };
+
+  return { now, progress, remaining, parts, isFinished: remaining <= 0 };
+}
+
+// ==========================================
+// COMPONENTES VISUALES
+// ==========================================
+
+const FloatingHearts = () => {
+  // Memoizamos para que los corazones no se recalculen en cada render
+  const hearts = useMemo(() => {
+    const seed = Math.floor(Date.now() / 86400000); // Semilla diaria
+    const rng = () => seededRandom(seed + Math.random()); // Pequeña variación
+    
+    return Array.from({ length: 20 }).map((_, i) => ({
+      id: i,
+      left: `${Math.floor(Math.random() * 100)}%`,
+      delay: `${(Math.random() * 5).toFixed(2)}s`,
+      duration: `${(6 + Math.random() * 4).toFixed(2)}s`,
+      size: `${10 + Math.floor(Math.random() * 20)}px`,
+      opacity: 0.3 + Math.random() * 0.5,
+    }));
+  }, []);
 
   return (
-    <div className="min-h-screen p-4 md:p-8 font-sans" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      <AnimatePresence mode="wait">
-        {!showLetter ? (
-          <motion.div
-            key="calendar"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-6xl mx-auto"
-          >
-            {/* Header y Fotos */}
-            <div className="mb-12 relative">
-              <motion.h1 
-                className="text-center text-5xl md:text-7xl mb-12 text-gray-700"
-                style={{ fontFamily: 'Dancing Script, cursive' }}
-                initial={{ y: -50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, type: 'spring' }}
-              >
-                Algunas fotitos especiales
-              </motion.h1>
-
-              <div className="flex justify-center gap-8 flex-wrap mb-16">
-                {memories.map((photo, idx) => (
-                  <motion.div
-                    key={idx}
-                    className="relative"
-                    initial={{ y: -100, opacity: 0, rotate: 0 }}
-                    animate={{ y: 0, opacity: 1, rotate: photo.rotate }}
-                    transition={{ 
-                      delay: photo.delay, 
-                      type: 'spring',
-                      stiffness: 100 
-                    }}
-                    whileHover={{ scale: 1.05, rotate: 0, zIndex: 10 }}
-                  >
-                    <div 
-                      className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-20 h-8 rounded-sm z-10"
-                      style={{
-                        background: 'rgba(240, 220, 180, 0.7)',
-                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.1)'
-                      }}
-                    />
-                    <div 
-                      className="bg-white p-3 pb-12 shadow-xl"
-                      style={{ filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.15))' }}
-                    >
-                      <img
-                        src={photo.image}
-                        alt={`Memory ${idx + 1}`}
-                        className="w-full h-full object-cover"
-                        style={{ width: '250px', height: '250px' }}
-                      />
-                    </div>
-                    <div 
-                      className="absolute bottom-2 left-0 right-0 text-center text-gray-600 text-sm"
-                      style={{ fontFamily: 'Caveat, cursive', fontSize: '18px' }}
-                    >
-                      {photo.caption}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 1, type: 'spring' }}
-                className="text-center mb-12"
-              >
-                <div className="inline-block bg-white rounded-2xl px-8 py-6 shadow-lg border-4 border-pink-100">
-                  <p className="text-gray-600 text-lg mb-2" style={{ fontFamily: 'Caveat, cursive', fontSize: '24px' }}>
-                    Faltan
-                  </p>
-                  <p className="text-6xl font-bold text-rose-400 mb-2">
-                    {daysRemaining}
-                  </p>
-                  <p className="text-gray-600 text-lg" style={{ fontFamily: 'Caveat, cursive', fontSize: '24px' }}>
-                    días para verte ❤️
-                  </p>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Calendarios */}
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="bg-white rounded-3xl shadow-2xl p-6 md:p-10 relative overflow-hidden"
-              style={{ background: 'linear-gradient(to bottom, #ffffff 0%, #fef9f5 100%)' }}
-            >
-              {/* Decoración esquinas */}
-              <div className="absolute top-0 left-0 w-20 h-20 opacity-20">
-                <div className="absolute top-4 left-4 w-12 h-1 bg-rose-300 rounded rotate-45" />
-                <div className="absolute top-4 left-4 w-1 h-12 bg-rose-300 rounded rotate-45" />
-              </div>
-              <div className="absolute bottom-0 right-0 w-20 h-20 opacity-20">
-                <div className="absolute bottom-4 right-4 w-12 h-1 bg-rose-300 rounded -rotate-45" />
-                <div className="absolute bottom-4 right-4 w-1 h-12 bg-rose-300 rounded -rotate-45" />
-              </div>
-
-              <h2 
-                className="text-4xl md:text-5xl text-center mb-8 text-gray-700"
-                style={{ fontFamily: 'Dancing Script, cursive' }}
-              >
-                Conteo hasta nuestro encuentro
-              </h2>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                
-                {/* CALENDARIO NOVIEMBRE 2025 */}
-                <div className="relative">
-                  <h3 
-                    className="text-2xl md:text-3xl text-center mb-4 text-gray-600"
-                    style={{ fontFamily: 'Dancing Script, cursive' }}
-                  >
-                    Noviembre 2025
-                  </h3>
-                  
-                  <div className="grid grid-cols-7 gap-2 md:gap-3 mb-3">
-                    {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
-                      <div key={day} className="text-center font-semibold text-gray-500 text-xs md:text-sm">
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="grid grid-cols-7 gap-2 md:gap-3">
-                    {Array.from({ length: novemberStartDay }).map((_, idx) => (
-                      <div key={`empty-nov-${idx}`} />
-                    ))}
-
-                    {daysInNovember.map((day) => {
-                      // Lógica REAL para Noviembre 2025
-                      const dateToCheck = new Date(2025, 10, day); // Mes 10 = Noviembre
-                      dateToCheck.setHours(0,0,0,0);
-                      const todayZero = new Date(todayDate);
-                      todayZero.setHours(0,0,0,0);
-
-                      const isToday = dateToCheck.getTime() === todayZero.getTime();
-                      const isPast = dateToCheck < todayZero;
-
-                      return (
-                        <motion.div
-                          key={`nov-${day}`}
-                          className={`
-                            relative aspect-square flex items-center justify-center rounded-lg text-sm md:text-base
-                            transition-all duration-300
-                          `}
-                          style={{
-                            background: isToday 
-                              ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)' // Amarillo si es hoy
-                              : isPast
-                              ? 'linear-gradient(135deg, #86efac 0%, #22c55e 100%)' // Verde si ya pasó
-                              : '#f5f5f4', // Gris/Blanco si falta
-                            boxShadow: isToday ? '0 4px 12px rgba(245, 158, 11, 0.4)' : isPast ? '0 2px 8px rgba(34, 197, 94, 0.3)' : 'none',
-                            opacity: isPast ? 0.7 : 1
-                          }}
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: isPast ? 0.7 : 1 }}
-                          transition={{ delay: 0.5 + (day * 0.01) }}
-                        >
-                          {isPast && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="text-white"
-                              >
-                                ✓
-                              </motion.div>
-                            </div>
-                          )}
-                          {isToday && (
-                            <>
-                              <div className="absolute -top-2 -right-2 bg-amber-500 rounded-full p-1 shadow-lg z-10 animate-pulse">
-                                <Heart className="w-3 h-3 text-white fill-white" />
-                              </div>
-                              <div 
-                                className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs whitespace-nowrap text-amber-600 font-semibold"
-                                style={{ fontFamily: 'Caveat, cursive', fontSize: '12px' }}
-                              >
-                                ¡Hoy! 💛
-                              </div>
-                            </>
-                          )}
-                          <span className={`${isToday ? 'text-white font-bold' : isPast ? 'text-white font-semibold' : 'text-gray-600'}`}>
-                            {day}
-                          </span>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* CALENDARIO DICIEMBRE 2025 */}
-                <div className="relative">
-                  <h3 
-                    className="text-2xl md:text-3xl text-center mb-4 text-gray-600"
-                    style={{ fontFamily: 'Dancing Script, cursive' }}
-                  >
-                    Diciembre 2025
-                  </h3>
-
-                  <div className="grid grid-cols-7 gap-2 md:gap-3 mb-3">
-                    {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
-                      <div key={day} className="text-center font-semibold text-gray-500 text-xs md:text-sm">
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="grid grid-cols-7 gap-2 md:gap-3 relative">
-                    {/* SVG para la línea animada */}
-                    <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
-                      <defs>
-                        <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#f472b6" />
-                          <stop offset="100%" stopColor="#fb923c" />
-                        </linearGradient>
-                      </defs>
-                      <motion.path
-                        d="M 50 150 Q 200 100, 350 150 T 650 150"
-                        stroke="url(#pathGradient)"
-                        strokeWidth="3"
-                        fill="none"
-                        strokeDasharray="10 5"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 0.6 }}
-                        transition={{ duration: 2, delay: 1.5, ease: "easeInOut" }}
-                      />
-                    </svg>
-
-                    {Array.from({ length: startDay }).map((_, idx) => (
-                      <div key={`empty-${idx}`} />
-                    ))}
-
-                    {daysInDecember.map((day) => {
-                      // Lógica REAL para Diciembre 2025
-                      const dateToCheck = new Date(2025, 11, day); // Mes 11 = Diciembre
-                      dateToCheck.setHours(0,0,0,0);
-                      const todayZero = new Date(todayDate);
-                      todayZero.setHours(0,0,0,0);
-
-                      const isToday = dateToCheck.getTime() === todayZero.getTime();
-                      const isPast = dateToCheck < todayZero;
-                      
-                      const isStartDay = day === 11;
-                      const isEndDay = day === 13;
-                      const isInBetween = day === 12;
-                      const isClickable = isEndDay;
-                      
-                      const isPastSpecial = (isStartDay || isEndDay || isInBetween) && isPast;
-
-                      return (
-                        <motion.div
-                          key={day}
-                          className={`
-                            relative aspect-square flex items-center justify-center rounded-lg text-sm md:text-base
-                            transition-all duration-300
-                            ${isClickable ? 'cursor-pointer hover:scale-110' : ''}
-                            ${isStartDay || isEndDay || isInBetween ? 'font-bold' : 'font-normal'}
-                          `}
-                          style={{
-                            background: isPastSpecial
-                              ? 'linear-gradient(135deg, #86efac 0%, #22c55e 100%)'
-                              : isToday
-                              ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
-                              : isStartDay 
-                              ? 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)'
-                              : isEndDay
-                              ? 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)'
-                              : isInBetween
-                              ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)'
-                              : isPast
-                              ? 'linear-gradient(135deg, #d1fae5 0%, #6ee7b7 100%)'
-                              : '#fafaf9',
-                            zIndex: isStartDay || isEndDay ? 2 : 0,
-                            boxShadow: (isStartDay || isEndDay) && !isPast ? '0 4px 12px rgba(0,0,0,0.15)' : isPast ? '0 2px 8px rgba(34, 197, 94, 0.2)' : 'none',
-                            opacity: isPast && !(isStartDay || isEndDay || isInBetween) ? 0.6 : 1
-                          }}
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: isPast && !(isStartDay || isEndDay || isInBetween) ? 0.6 : 1 }}
-                          transition={{ delay: 1 + (day * 0.02) }}
-                          whileHover={isClickable ? { scale: 1.15 } : {}}
-                          onClick={isClickable ? handleDay13Click : undefined}
-                        >
-                          {isPast && !isToday && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="text-white text-lg"
-                              >
-                                ✓
-                              </motion.div>
-                            </div>
-                          )}
-
-                          {isStartDay && !isPast && (
-                            <div className="absolute -top-2 -right-2 bg-blue-500 rounded-full p-1 shadow-lg z-10">
-                              <Plane className="w-3 h-3 text-white" />
-                            </div>
-                          )}
-
-                          {isEndDay && !isPast && (
-                            <>
-                              <div className="absolute -top-2 -right-2 bg-rose-500 rounded-full p-1 shadow-lg z-10 animate-pulse">
-                                <Lock className="w-3 h-3 text-white" />
-                              </div>
-                              <div 
-                                className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs whitespace-nowrap text-rose-500 font-semibold"
-                                style={{ fontFamily: 'Caveat, cursive', fontSize: '12px' }}
-                              >
-                                🔒 Carta
-                              </div>
-                            </>
-                          )}
-
-                          {isToday && (
-                            <div className="absolute -top-2 -right-2 bg-amber-500 rounded-full p-1 shadow-lg z-10 animate-pulse">
-                              <Heart className="w-3 h-3 text-white fill-white" />
-                            </div>
-                          )}
-
-                          <span className={`
-                            ${isToday ? 'text-white font-bold' : ''}
-                            ${isPast && !isToday ? 'text-white font-semibold' : ''}
-                            ${!isPast && !isToday && (isStartDay || isEndDay) ? 'text-gray-700' : ''}
-                            ${!isPast && !isToday && !isStartDay && !isEndDay ? 'text-gray-600' : ''}
-                          `}>
-                            {day}
-                          </span>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* Leyenda */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5 }}
-                className="flex flex-wrap justify-center gap-4 mb-8 text-sm"
-                style={{ fontFamily: 'Caveat, cursive', fontSize: '16px' }}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-gradient-to-br from-green-300 to-green-500 flex items-center justify-center text-white text-xs">✓</div>
-                  <span>Días Pasados</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-gradient-to-br from-amber-400 to-amber-500"></div>
-                  <span>Hoy</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-gradient-to-br from-blue-200 to-blue-300"></div>
-                  <span>Salida (11 Dic)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-gradient-to-br from-yellow-200 to-yellow-300"></div>
-                  <span>Viaje (12 Dic)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-gradient-to-br from-pink-200 to-pink-300"></div>
-                  <span>¡Llegada! (13 Dic)</span>
-                </div>
-              </motion.div>
-
-              <motion.button
-                onClick={handleDay13Click}
-                className="mt-4 mx-auto block bg-gradient-to-r from-rose-400 to-pink-500 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all font-semibold text-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 2 }}
-              >
-                🔒 Abrir Carta de Amor
-              </motion.button>
-            </motion.div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="letter"
-            initial={{ opacity: 0, scale: 0.8, rotateX: -90 }}
-            animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.6, type: 'spring' }}
-            className="max-w-3xl mx-auto relative"
-          >
-            <motion.button
-              onClick={() => setShowLetter(false)}
-              className="absolute -top-4 -right-4 bg-white rounded-full p-3 shadow-lg z-20 hover:bg-gray-100"
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <X className="w-6 h-6 text-gray-600" />
-            </motion.button>
-
-            <div 
-              className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 relative overflow-hidden"
-              style={{
-                background: 'linear-gradient(to bottom, #fffbf5 0%, #fff5eb 100%)',
-                backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(0,0,0,0.03) 31px, rgba(0,0,0,0.03) 32px)`
-              }}
-            >
-              <div className="absolute top-4 right-4 text-rose-300 opacity-20">
-                <Heart className="w-16 h-16 fill-current" />
-              </div>
-              <div className="absolute bottom-4 left-4 text-pink-300 opacity-20">
-                <Heart className="w-12 h-12 fill-current" />
-              </div>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, staggerChildren: 0.1 }}
-              >
-                <h2 
-                  className="text-4xl md:text-5xl text-center mb-8 text-rose-500"
-                  style={{ fontFamily: 'Dancing Script, cursive' }}
-                >
-                  Para el amor de mi vida
-                </h2>
-
-                <div 
-                  className="text-gray-700 leading-relaxed space-y-6 text-base md:text-lg"
-                  style={{ fontFamily: 'Caveat, cursive', fontSize: '22px', lineHeight: '2' }}
-                >
-                  <p>Mi amor,</p>
-                  
-                  <p>
-                    CAda día que pasa sin verte se siente como una eternidad. Pero por suerte estamos a pocos días de reencontrarnos
-                    estoy muy emocionado de poder sentirte nuevamente, han sido días complicados para nosotros dos, y tener a la 
-                    persona que amas lejos es aún más complicado, pero igual estoy muy alegre de saber todo lo que estás logrando y todo
-                    el esfuerzo que le estás metiendo, estoy muy orgullo de ti.
-                  </p>
-
-                  <p>
-                    ROmpemos esa distancia el día sábado, cuando por fin pueda abrazarte y sentir tu calor, tengo pensado comprar unas flores para resibirte Jajaja,
-                    y el sábado estar juntitos comiendo algo que te guste mucho, sé que has estado extrañando la comida de Ecuador, además de eso, también quiero
-                    que pases menos estrés de todo lo que has estado haciendo, quiero que estés relajada y feliz.
-                  </p>
-
-                  <p>
-                    LA distancia existe, pero nunca ha sido más fuerte de lo que sentimos. Siento que nuestra relación se ha fortalecido
-                    a pesar de la distancia, y eso me llena de esperanza y amor por lo que viene, estamos a punto completar otra etapa juntos.
-                    A pesar de que no estés conmigo en ese momento importante de mi vida, siento que tu apoyo y amor me acompañan siempre.
-                    Estaré pensando en ti en ese momento especiales, y sé que pronto podremos celebrar juntos.
-                  </p>
-
-                  <p>
-                    Es un poco tiempo que nos veremos, casi un mes, pero espero que podamos aprovecharlo al máximo, quiero
-                    crear nuevos recuerdos contigo, explorar nuevos lugares, y simplemente disfrutar de cada momento a tu lado.
-                    Estoy seguro de que este reencuentro será inolvidable para ambos y seguiremos construyendo nuestra historia juntos.
-                  </p>
-
-                  <p>
-                    Te amo más de lo que las palabras pueden expresar. Gracias por estar en mi vida, gracias 
-                    por ser mi persona, gracias por existir y gracias por hacerme tan feliz.
-                  </p>
-
-                  <div className="text-center mt-8">
-                    <p className="text-2xl">Con todo mi amor,</p>
-                    <p className="text-3xl mt-2 text-rose-500">Cristian Trávez 💕</p>
-                  </div>
-
-                  <div className="flex justify-center mt-8 gap-4">
-                    <MapPin className="w-6 h-6 text-blue-500" />
-                    <Heart className="w-8 h-8 text-rose-500 fill-rose-500 animate-pulse" />
-                    <MapPin className="w-6 h-6 text-green-500" />
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Modal de Contraseña */}
-      <AnimatePresence>
-        {showPasswordModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowPasswordModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <motion.button
-                onClick={() => setShowPasswordModal(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-                whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <X className="w-6 h-6" />
-              </motion.button>
-
-              <div className="text-center mb-6">
-                <div className="inline-block p-4 bg-rose-100 rounded-full mb-4">
-                  <Lock className="w-12 h-12 text-rose-500" />
-                </div>
-                <h3 
-                  className="text-3xl mb-2 text-rose-500"
-                  style={{ fontFamily: 'Dancing Script, cursive' }}
-                >
-                  Contenido Protegido
-                </h3>
-                <p className="text-gray-600" style={{ fontFamily: 'Caveat, cursive', fontSize: '18px' }}>
-                  Ingresa la clave especial para abrir la carta 💕
-                </p>
-              </div>
-
-              <form onSubmit={handlePasswordSubmit} className="space-y-4">
-                <div>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Clave secreta..."
-                    className="w-full px-4 py-3 border-2 border-rose-200 rounded-lg focus:outline-none focus:border-rose-400 transition-colors text-center text-lg"
-                    style={{ fontFamily: 'Caveat, cursive' }}
-                    autoFocus
-                  />
-                  {passwordError && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-red-500 text-sm mt-2 text-center"
-                      style={{ fontFamily: 'Caveat, cursive', fontSize: '16px' }}
-                    >
-                      {passwordError}
-                    </motion.p>
-                  )}
-                </div>
-
-                <motion.button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-rose-400 to-pink-500 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Desbloquear 💌
-                </motion.button>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+    <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+      {hearts.map((h) => (
+        <span
+          key={h.id}
+          className="float-heart absolute bottom-[-50px] text-rose-500/40 animate-float"
+          style={{
+            left: h.left,
+            animationDelay: h.delay,
+            animationDuration: h.duration,
+            fontSize: h.size,
+            opacity: h.opacity,
+          }}
+        >
+          💗
+        </span>
+      ))}
+      <style>{`
+        @keyframes floatUp {
+          0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+          10% { opacity: 1; }
+          100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+        .animate-float {
+          animation-name: floatUp;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+      `}</style>
     </div>
   );
 };
 
-export default RomanticCountdown;
+const Hourglass = ({ progress }) => {
+  // Lógica visual de la arena
+  const sandTopHeight = `${Math.max(0, (1 - progress) * 100)}%`;
+  const sandBottomHeight = `${Math.min(100, progress * 100)}%`;
+  const isFlowing = progress < 1;
+
+  return (
+    <div className="relative w-32 h-60 flex flex-col items-center drop-shadow-2xl mx-auto">
+      {/* Estilos inyectados para la animación de la arena */}
+      <style>{`
+        @keyframes sandStream {
+          0% { background-position: 0 0; }
+          100% { background-position: 0 20px; }
+        }
+        .animate-sand-stream {
+          background-size: 10px 20px;
+          background-image: linear-gradient(to bottom, rgba(251, 113, 133, 0.8) 50%, rgba(244, 63, 94, 0.8) 50%);
+          animation: sandStream 0.5s linear infinite;
+        }
+      `}</style>
+
+      {/* Tapa Superior */}
+      <div className="w-28 h-4 bg-rose-900 rounded-t-lg shadow-lg z-20 border-b border-rose-400/30" />
+
+      {/* Contenedor de Vidrio */}
+      <div className="relative w-full flex-1 backdrop-blur-sm bg-white/5 border-x border-white/10 rounded-lg overflow-hidden flex flex-col">
+        
+        {/* Cámara Superior */}
+        <div className="flex-1 relative border-b border-white/10 overflow-hidden">
+             {/* Arena restante arriba */}
+            <div 
+              className="absolute bottom-0 w-full bg-gradient-to-t from-rose-400 to-rose-300 transition-all duration-1000 ease-linear rounded-b-xl opacity-90"
+              style={{ height: sandTopHeight }} 
+            />
+        </div>
+
+        {/* Cuello del reloj (Chorro de arena) */}
+        <div className="relative h-0 z-10 flex justify-center items-center">
+            {isFlowing && (
+                <div className="absolute top-0 w-1 h-32 bg-rose-400 animate-sand-stream opacity-90" />
+            )}
+        </div>
+
+        {/* Cámara Inferior */}
+        <div className="flex-1 relative border-t border-white/10 overflow-hidden flex items-end">
+            {/* Arena acumulada abajo */}
+            <div 
+                className="w-full bg-gradient-to-t from-rose-500 to-rose-400 transition-all duration-1000 ease-linear rounded-t-xl opacity-90 shadow-[0_0_20px_rgba(244,63,94,0.4)]"
+                style={{ height: sandBottomHeight }} 
+            />
+        </div>
+
+        {/* Brillo del vidrio */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+      </div>
+
+      {/* Base Inferior */}
+      <div className="w-28 h-4 bg-rose-900 rounded-b-lg shadow-lg z-20 border-t border-rose-400/30" />
+    </div>
+  );
+};
+
+const TimeChip = ({ label, value }) => (
+  <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-900/40 border border-white/5 backdrop-blur-md min-w-[70px] md:min-w-[90px]">
+    <span className="text-2xl md:text-3xl font-bold text-white tabular-nums">{value}</span>
+    <span className="text-[10px] uppercase tracking-widest text-rose-300/80 mt-1">{label}</span>
+  </div>
+);
+
+const ProgressBar = ({ percent }) => (
+  <div className="w-full space-y-2">
+    <div className="flex justify-between text-xs font-medium text-rose-200/70 uppercase tracking-wider">
+      <span>Inicio</span>
+      <span>{percent.toFixed(1)}% Completado</span>
+      <span>Meta</span>
+    </div>
+    <div className="h-4 w-full bg-slate-900/50 rounded-full overflow-hidden border border-white/5 shadow-inner">
+      <div 
+        className="h-full bg-gradient-to-r from-rose-600 via-pink-500 to-fuchsia-500 shadow-[0_0_15px_rgba(236,72,153,0.6)] transition-all duration-1000 ease-out"
+        style={{ width: `${percent}%` }}
+      />
+    </div>
+  </div>
+);
+
+// ==========================================
+// COMPONENTE PRINCIPAL
+// ==========================================
+export default function App() {
+  const { now, progress, parts, isFinished } = useCountdown(CONFIG.startDate, CONFIG.targetDate);
+
+  // Mensaje diario aleatorio (Memoizado para que no cambie al re-renderizar)
+  const dailyMessage = useMemo(() => {
+    const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+    return LOVE_MESSAGES[dayIndex % LOVE_MESSAGES.length];
+  }, []);
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-[#0f0a1a] text-white selection:bg-rose-500/30">
+      {/* Fondos Ambientales */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-[#130820] to-slate-950" />
+      <div className="fixed top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,_rgba(244,63,94,0.15),transparent_50%)]" />
+      
+      <FloatingHearts />
+
+      <main className="relative z-10 container mx-auto px-6 py-12 md:py-20 flex flex-col items-center justify-center min-h-screen">
+        <div className="grid lg:grid-cols-2 gap-12 items-center w-full max-w-5xl">
+          
+          {/* SECCIÓN IZQUIERDA: Textos y Contadores */}
+          <div className="space-y-10">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-bold tracking-wider uppercase">
+                <span className="animate-pulse">●</span> Cuenta Regresiva
+              </div>
+              
+              <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
+                {isFinished ? (
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-fuchsia-400">
+                    ¡Es hoy! 🎉
+                  </span>
+                ) : (
+                  <>
+                    Faltan <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-fuchsia-400">{parts.days} días</span><br />
+                    para verte
+                  </>
+                )}
+              </h1>
+              
+              <p className="text-lg md:text-xl text-slate-300 font-light max-w-md border-l-2 border-rose-500/50 pl-4">
+                "{dailyMessage}"
+              </p>
+            </div>
+
+            {/* Contadores */}
+            <div className="flex flex-wrap gap-4">
+              <TimeChip label="Días" value={parts.days} />
+              <TimeChip label="Horas" value={formatters.pad(parts.hours)} />
+              <TimeChip label="Min" value={formatters.pad(parts.minutes)} />
+              <TimeChip label="Seg" value={formatters.pad(parts.seconds)} />
+            </div>
+
+            {/* Barra de Progreso y Fechas */}
+            <div className="bg-slate-800/30 rounded-2xl p-6 border border-white/5 backdrop-blur-sm">
+              <ProgressBar percent={progress * 100} />
+              
+              <div className="flex justify-between items-center mt-4 text-sm">
+                <div className="text-left">
+                  <p className="text-slate-400 text-xs">Fecha Actual</p>
+                  <p className="font-medium text-white">{formatters.dateFull(now)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-slate-400 text-xs">Gran Día</p>
+                  <p className="font-medium text-rose-300">{formatters.dateShort(CONFIG.targetDate)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECCIÓN DERECHA: Visuales (Reloj + Foto) */}
+          <div className="flex flex-col items-center gap-8 relative">
+            {/* Efecto Glow de fondo */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-rose-500/10 blur-[80px] rounded-full pointer-events-none" />
+
+            <Hourglass progress={progress} />
+            
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-rose-600 to-fuchsia-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+              <div className="relative aspect-[4/3] w-full max-w-xs rounded-xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl">
+                <img 
+                  src={foto1} 
+                  alt="Nosotros" 
+                  className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+                  <span className="text-white font-medium text-sm">Contigo todo es mejor 💗</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  );
+}
